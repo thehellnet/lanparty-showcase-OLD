@@ -1,5 +1,13 @@
 <template>
-  <div id="content"></div>
+  <div>
+    <div>
+      <input type="text" id="text" v-model="text" />
+      <input type="button" value="SEND" v-on:click="sendText" />
+    </div>
+    <div>
+      <div id="content"></div>
+    </div>
+  </div>
 </template>
 
 <script lang="ts">
@@ -8,14 +16,19 @@ import { Client, over } from "stompjs";
 
 @Component({})
 export default class App extends Vue {
-  created() {
+  private TAG: string = "showcase1";
+  public text: string = "";
+
+  private stompClient!: Client;
+
+  public created() {
     const webSocket: WebSocket = new WebSocket(
-      "ws://127.0.0.1:8080/lanparty_manager/api/public/ws/showcase"
+      "ws://127.0.0.1:8080/lanparty_manager/api/public/ws/showcase/" + this.TAG
     );
 
-    const stompClient: Client = over(webSocket);
+    this.stompClient = over(webSocket);
 
-    stompClient.connect(
+    this.stompClient.connect(
       {},
       frame => {
         console.log(frame);
@@ -25,9 +38,14 @@ export default class App extends Vue {
       }
     );
 
-    stompClient.subscribe("test", message => {
+    this.stompClient.subscribe("test", message => {
       console.log(message);
     });
+  }
+
+  public sendText() {
+    this.stompClient.send("test2", this.text);
+    this.text = "";
   }
 }
 </script>
