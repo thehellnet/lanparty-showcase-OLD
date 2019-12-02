@@ -1,20 +1,35 @@
 <template>
-  <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png" />
-    <HelloWorld msg="Welcome to Your Vue.js + TypeScript App" />
-  </div>
+  <div id="content"></div>
 </template>
 
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
-import HelloWorld from "./components/HelloWorld.vue";
+import { Client, over } from "stompjs";
 
-@Component({
-  components: {
-    HelloWorld
+@Component({})
+export default class App extends Vue {
+  created() {
+    const webSocket: WebSocket = new WebSocket(
+      "ws://127.0.0.1:8080/lanparty_manager/api/public/ws/showcase"
+    );
+
+    const stompClient: Client = over(webSocket);
+
+    stompClient.connect(
+      {},
+      frame => {
+        console.log(frame);
+      },
+      error => {
+        console.log(error);
+      }
+    );
+
+    stompClient.subscribe("test", message => {
+      console.log(message);
+    });
   }
-})
-export default class App extends Vue {}
+}
 </script>
 
 <style lang="scss">
