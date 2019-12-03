@@ -1,51 +1,35 @@
 <template>
   <div>
     <div>
-      <input type="text" id="text" v-model="text" />
+      <input type="text" id="text" v-model="txMessage" />
       <input type="button" value="SEND" v-on:click="sendText" />
     </div>
     <div>
-      <div id="content"></div>
+      <div id="content">
+        <div v-bind="rxMessage" />
+      </div>
     </div>
   </div>
 </template>
 
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
-import { Client, over } from "stompjs";
+import showcaseService from "@/services/showcase.service";
 
 @Component({})
 export default class App extends Vue {
-  private TAG: string = "showcase1";
-  public text: string = "";
-
-  private stompClient!: Client;
+  public txMessage: string = "";
+  public rxMessage: string = "";
 
   public created() {
-    const webSocket: WebSocket = new WebSocket(
-      "ws://127.0.0.1:8080/lanparty_manager/api/public/ws/showcase/" + this.TAG
-    );
-
-    this.stompClient = over(webSocket);
-
-    this.stompClient.connect(
-      {},
-      frame => {
-        console.log(frame);
-      },
-      error => {
-        console.log(error);
-      }
-    );
-
-    this.stompClient.subscribe("test", message => {
-      console.log(message);
+    showcaseService.onMessage(message => {
+      this.rxMessage = message;
     });
   }
 
   public sendText() {
-    this.stompClient.send("test2", this.text);
-    this.text = "";
+    showcaseService.send(this.txMessage);
+    this.txMessage = "";
   }
 }
 </script>
