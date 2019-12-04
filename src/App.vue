@@ -1,3 +1,6 @@
+import {Verb} from "@/protocol/commands"; import {Noun} from
+"@/protocol/commands"; import {Noun} from "@/protocol/commands"; import {Verb}
+from "@/protocol/commands";
 <template>
   <div>
     <div>
@@ -15,20 +18,21 @@
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
 import showcaseService from "@/services/showcase.service";
+import { Command, Noun, Verb } from "@/protocol/commands";
 
 @Component({})
 export default class App extends Vue {
   public txMessage: string = "";
   public rxMessage: string = "";
 
-  public created() {
-    showcaseService.onMessage(message => {
-      this.rxMessage = message;
-    });
-  }
+  public created() {}
 
   public sendText() {
-    showcaseService.send(this.txMessage);
+    const command: Command = new Command(Noun.TEST, Verb.TEXT, {
+      message: this.txMessage
+    });
+
+    showcaseService.send(command);
     this.txMessage = "";
   }
 }

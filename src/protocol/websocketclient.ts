@@ -9,6 +9,8 @@ export class WebsocketClient {
 
   private webSocket!: WebSocket;
 
+  private _onConnect = new EventDispatcher<void>();
+  private _onDisconnect = new EventDispatcher<void>();
   private _onMessage = new EventDispatcher<string>();
 
   constructor(wsUrl: string, tag: string) {
@@ -36,8 +38,16 @@ export class WebsocketClient {
     this.webSocket.send(message);
   }
 
-  public onMessage(message: Handler<string>) {
-    this._onMessage.register(message);
+  public onConnect(handler: Handler<void>) {
+    this._onConnect.register(handler);
+  }
+
+  public onDisconnect(handler: Handler<void>) {
+    this._onDisconnect.register(handler);
+  }
+
+  public onMessage(handler: Handler<string>) {
+    this._onMessage.register(handler);
   }
 
   private openWebsocket() {
@@ -47,11 +57,13 @@ export class WebsocketClient {
     this.webSocket.onopen = ev => {
       console.log("Websocket onopen");
       this.running = true;
+      this._onConnect.fire();
     };
 
     this.webSocket.onclose = ev => {
       console.log("Websocket onclose");
       this.running = false;
+      this._onDisconnect.fire();
       this.checkRestart();
     };
 
