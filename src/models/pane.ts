@@ -1,7 +1,12 @@
-class Pane {
+export enum PaneMode {
+  SCORES,
+  MATCHES,
+  SINGLE_MATCH
+}
+
+export class Pane {
   id!: number;
-  name!: string;
-  mode!: string;
+  mode!: PaneMode;
   tournament?: number;
   match?: number;
 }

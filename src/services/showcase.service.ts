@@ -65,6 +65,6 @@ class ShowcaseService {
 }
 
 const showcaseService = new ShowcaseService();
-showcaseService.start();
+// showcaseService.start();
 
 export default showcaseService;

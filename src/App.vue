@@ -16,8 +16,6 @@ import statusService from "@/services/status.service";
   components: { ShowcaseContent, ShowcaseFooter }
 })
 export default class App extends Vue {
-  public panes: Pane[] = [];
-
   public created() {
     showcaseService.onConnect(() => {
       statusService.websocketConnected = true;
@@ -30,30 +28,7 @@ export default class App extends Vue {
     showcaseService.onMessage(content => this.handleMessage(content));
   }
 
-  private handleMessage(content: any) {
-    if (content.hasOwnProperty("panes")) {
-      const panes: Pane[] = [];
-
-      for (const pane of content.panes) {
-        const item: Pane = {
-          id: pane.id,
-          name: pane.name,
-          mode: pane.mode
-        };
-
-        if (pane.tournament != null) {
-          item.tournament = pane.tournament;
-        }
-        if (pane.match != null) {
-          item.match = pane.match;
-        }
-
-        panes.push(item);
-      }
-
-      this.panes = panes;
-    }
-  }
+  private handleMessage(content: any) {}
 }
 </script>
 
