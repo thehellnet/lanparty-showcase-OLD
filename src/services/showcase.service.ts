@@ -2,6 +2,7 @@ import { WebsocketClient } from "@/protocol/websocketclient";
 import PathUtility from "@/utilities/path.utility";
 import { CommandFactory } from "@/protocol/commandfactory";
 import { Command, Noun, Verb } from "@/protocol/commands";
+import { EventDispatcher, Handler } from "@/utilities/event";
 
 const URL = "ws://127.0.0.1:8080/lanparty_manager/api/public/ws/showcase";
 
@@ -10,11 +11,17 @@ const TAG = PathUtility.basename(window.location.href) || "anonymous";
 class ShowcaseService {
   private websocketClient: WebsocketClient;
 
+  private _onMessage = new EventDispatcher<any>();
+
   constructor() {
     this.websocketClient = new WebsocketClient(URL, TAG);
 
-    this.websocketClient.onMessage(message => this.onMessage(message));
-    this.websocketClient.onConnect(() => this.onConnect());
+    this.websocketClient.onMessage(message => this.handleMessage(message));
+    this.websocketClient.onConnect(() => this.handleConnect());
+  }
+
+  public onMessage(handler: Handler<any>) {
+    this._onMessage.register(handler);
   }
 
   public start(): void {
@@ -26,12 +33,15 @@ class ShowcaseService {
     this.websocketClient.send(message);
   }
 
-  private onConnect(): void {
+  private handleConnect(): void {
     const command = CommandFactory.prepare(Noun.PANE, Verb.GET);
     this.send(command);
   }
 
-  private onMessage(message: string): void {}
+  private handleMessage(message: string): void {
+    const content = JSON.parse(message);
+    this._onMessage.fire(content);
+  }
 }
 
 const showcaseService = new ShowcaseService();

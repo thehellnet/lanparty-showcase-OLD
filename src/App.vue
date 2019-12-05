@@ -1,16 +1,7 @@
-import {Verb} from "@/protocol/commands"; import {Noun} from
-"@/protocol/commands"; import {Noun} from "@/protocol/commands"; import {Verb}
-from "@/protocol/commands";
 <template>
   <div>
-    <div>
-      <input type="text" id="text" v-model="txMessage" />
-      <input type="button" value="SEND" v-on:click="sendText" />
-    </div>
-    <div>
-      <div id="content">
-        <div v-bind="rxMessage" />
-      </div>
+    <div id="content">
+      <v-carousel v-model="panes"> </v-carousel>
     </div>
   </div>
 </template>
@@ -18,22 +9,40 @@ from "@/protocol/commands";
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
 import showcaseService from "@/services/showcase.service";
-import { Command, Noun, Verb } from "@/protocol/commands";
 
 @Component({})
 export default class App extends Vue {
   public txMessage: string = "";
-  public rxMessage: string = "";
 
-  public created() {}
+  public panes: Pane[] = [];
 
-  public sendText() {
-    const command: Command = new Command(Noun.TEST, Verb.TEXT, {
-      message: this.txMessage
-    });
+  public created() {
+    showcaseService.onMessage(content => this.handleMessage(content));
+  }
 
-    showcaseService.send(command);
-    this.txMessage = "";
+  private handleMessage(content: any) {
+    if (content.hasOwnProperty("panes")) {
+      const panes: Pane[] = [];
+
+      for (const pane of content.panes) {
+        const item: Pane = {
+          id: pane.id,
+          name: pane.name,
+          mode: pane.mode
+        };
+
+        if (pane.tournament != null) {
+          item.tournament = pane.tournament;
+        }
+        if (pane.match != null) {
+          item.match = pane.match;
+        }
+
+        panes.push(item);
+      }
+
+      this.panes = panes;
+    }
   }
 }
 </script>
