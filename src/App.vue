@@ -1,22 +1,32 @@
 <template>
-  <div>
-    <div id="content">
-      <v-carousel v-model="panes"> </v-carousel>
-    </div>
+  <div id="app">
+    <ShowcaseContent />
+    <ShowcaseFooter />
   </div>
 </template>
 
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
+import ShowcaseFooter from "@/components/ShowcaseFooter.vue";
+import ShowcaseContent from "@/components/ShowcaseContent.vue";
 import showcaseService from "@/services/showcase.service";
+import statusService from "@/services/status.service";
 
-@Component({})
+@Component({
+  components: { ShowcaseContent, ShowcaseFooter }
+})
 export default class App extends Vue {
-  public txMessage: string = "";
-
   public panes: Pane[] = [];
 
   public created() {
+    showcaseService.onConnect(() => {
+      statusService.websocketConnected = true;
+    });
+
+    showcaseService.onDisconnect(() => {
+      statusService.websocketConnected = false;
+    });
+
     showcaseService.onMessage(content => this.handleMessage(content));
   }
 
@@ -48,12 +58,23 @@ export default class App extends Vue {
 </script>
 
 <style lang="scss">
+html,
+body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+}
+
+@import "~typeface-montserrat/index.css";
+
 #app {
-  font-family: "Avenir", Helvetica, Arial, sans-serif;
+  font-family: "Montserrat", Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
-  margin-top: 60px;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
 }
 </style>

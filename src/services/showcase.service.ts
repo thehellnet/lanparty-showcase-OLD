@@ -1,5 +1,5 @@
 import { WebsocketClient } from "@/protocol/websocketclient";
-import PathUtility from "@/utilities/path.utility";
+import { PathUtility } from "@/utilities/path.utility";
 import { CommandFactory } from "@/protocol/commandfactory";
 import { Command, Noun, Verb } from "@/protocol/commands";
 import { EventDispatcher, Handler } from "@/utilities/event";
@@ -11,13 +11,33 @@ const TAG = PathUtility.basename(window.location.href) || "anonymous";
 class ShowcaseService {
   private websocketClient: WebsocketClient;
 
+  private _onConnect = new EventDispatcher<void>();
+  private _onDisconnect = new EventDispatcher<void>();
   private _onMessage = new EventDispatcher<any>();
 
   constructor() {
     this.websocketClient = new WebsocketClient(URL, TAG);
 
-    this.websocketClient.onMessage(message => this.handleMessage(message));
-    this.websocketClient.onConnect(() => this.handleConnect());
+    this.websocketClient.onConnect(() => {
+      this._onConnect.fire();
+      this.handleConnect();
+    });
+
+    this.websocketClient.onDisconnect(() => {
+      this._onDisconnect.fire();
+    });
+
+    this.websocketClient.onMessage(message => {
+      this.handleMessage(message);
+    });
+  }
+
+  public onConnect(handler: Handler<void>) {
+    this._onConnect.register(handler);
+  }
+
+  public onDisconnect(handler: Handler<void>) {
+    this._onDisconnect.register(handler);
   }
 
   public onMessage(handler: Handler<any>) {
