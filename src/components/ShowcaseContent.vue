@@ -4,8 +4,13 @@
       League of Legends - 1v1
     </div>
     <div class="pane-content">
-      <div class="match-table">
-        <div v-for="(match, idx) in matches" :key="idx" class="match-row">
+      <div id="match-table" class="match-table">
+        <div
+          v-for="(match, idx) in matches"
+          :key="idx"
+          :id="'match-' + match.id"
+          class="match-row"
+        >
           <div
             v-bind:class="{
               'match-cell-local': true,
@@ -94,40 +99,28 @@
 
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
+import VueScrollTo from "vue-scrollto";
+import { DemoData } from "@/demo/demodata";
 
 @Component
 export default class ShowcaseContent extends Vue {
-  public matches = [
-    {
-      local: "Team One",
-      guest: "Team Two",
-      status: "PLAYED",
-      winner: "guest",
-      scoresLocal: {
-        kills: 3,
-        gold: 50,
-        towers: 2,
-        dragons: 4
-      },
-      scoresGuest: {
-        kills: 7,
-        gold: 58,
-        towers: 2,
-        dragons: 3
-      }
-    },
-    { local: "Team3", guest: "Team4", status: "RUNNING" },
-    { local: "Team5", guest: "Team6", status: "SCHEDULED", when: "15:30" },
-    { local: "Team7", guest: "Team8", status: "SCHEDULED", when: "15:45" }
-  ];
+  public matches = DemoData.matches;
 
-  created() {}
+  created() {
+    const runningMatch = this.matches.filter(
+      match => match.status === "RUNNING"
+    )[0];
+
+    VueScrollTo.scrollTo("#match-" + runningMatch.id);
+  }
 }
 </script>
 
 <style scoped>
 div#content {
-  flex: 1 0 auto;
+  margin: 0;
+  padding: 0;
+  width: 100%;
   background: #222222;
   font-size: x-large;
 }
