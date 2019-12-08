@@ -1,10 +1,16 @@
 import Vue from "vue";
 import App from "./App.vue";
 import Vuetify from "vuetify";
-
-Vue.config.productionTip = false;
+import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
+import { library } from "@fortawesome/fontawesome-svg-core";
+import { fas } from "@fortawesome/free-solid-svg-icons";
 
 Vue.use(Vuetify);
+
+library.add(fas);
+Vue.component("font-awesome-icon", FontAwesomeIcon);
+
+Vue.config.productionTip = false;
 
 new Vue({
   render: h => h(App)
