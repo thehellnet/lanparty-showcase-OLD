@@ -23,56 +23,7 @@
             {{ match.local }}
           </div>
           <div class="match-cell-info" v-if="match.status === 'PLAYED'">
-            <div
-              v-bind:class="{
-                'player-winner':
-                  match.status === 'PLAYED' && match.winner === 'local',
-                'player-looser':
-                  match.status === 'PLAYED' && match.winner !== 'local'
-              }"
-            >
-              <div>
-                <font-awesome-icon class="game-icon" icon="skull" />
-                {{ match.scoresLocal.kills }}
-              </div>
-              <div>
-                <font-awesome-icon class="game-icon" icon="coins" />
-                {{ match.scoresLocal.gold }}
-              </div>
-              <div>
-                <font-awesome-icon class="game-icon" icon="gopuram" />
-                {{ match.scoresLocal.towers }}
-              </div>
-              <div>
-                <font-awesome-icon class="game-icon" icon="dragon" />
-                {{ match.scoresLocal.dragons }}
-              </div>
-            </div>
-            <div
-              v-bind:class="{
-                'player-winner':
-                  match.status === 'PLAYED' && match.winner === 'guest',
-                'player-looser':
-                  match.status === 'PLAYED' && match.winner !== 'guest'
-              }"
-            >
-              <div>
-                <font-awesome-icon class="game-icon" icon="skull" />
-                {{ match.scoresGuest.kills }}
-              </div>
-              <div>
-                <font-awesome-icon class="game-icon" icon="coins" />
-                {{ match.scoresGuest.gold }}
-              </div>
-              <div>
-                <font-awesome-icon class="game-icon" icon="gopuram" />
-                {{ match.scoresGuest.towers }}
-              </div>
-              <div>
-                <font-awesome-icon class="game-icon" icon="dragon" />
-                {{ match.scoresGuest.dragons }}
-              </div>
-            </div>
+            Terminiata
           </div>
           <div class="match-cell-info" v-if="match.status === 'RUNNING'">
             In corso
@@ -82,7 +33,7 @@
           </div>
           <div
             v-bind:class="{
-              'match-cell-local': true,
+              'match-cell-guest': true,
               'player-winner':
                 match.status === 'PLAYED' && match.winner === 'guest',
               'player-looser':
@@ -106,12 +57,16 @@ import { DemoData } from "@/demo/demodata";
 export default class ShowcaseContent extends Vue {
   public matches = DemoData.matches;
 
-  created() {
+  mounted() {
     const runningMatch = this.matches.filter(
       match => match.status === "RUNNING"
     )[0];
 
-    VueScrollTo.scrollTo("#match-" + runningMatch.id);
+    VueScrollTo.scrollTo("#match-" + runningMatch.id, {
+      container: "div.pane-content",
+      duration: 3000,
+      offset: -80
+    });
   }
 }
 </script>
@@ -121,32 +76,57 @@ div#content {
   margin: 0;
   padding: 0;
   width: 100%;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
   background: #222222;
   font-size: x-large;
 }
 
 div.pane-title {
+  margin: 0;
+  padding-top: 10px;
+  padding-bottom: 20px;
+  position: absolute;
+  width: 100%;
+  top: 0;
+  height: 100px;
   font-size: 3.5em;
   font-weight: bold;
-  margin-top: 10px;
-  margin-bottom: 50px;
 }
 
 div.pane-content {
-  margin-top: 10px;
-  margin-bottom: 10px;
+  margin: 0;
+  padding: 0;
+  position: absolute;
+  overflow-y: auto;
+  width: 100%;
+  top: 130px;
+  bottom: 50px;
   font-size: 1.5em;
 }
 
 div.match-table {
+  margin: 0;
+  padding: 0;
 }
 
 div.match-row {
+  margin: 0;
+  padding: 0 150px;
+  height: 80px;
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
-  margin: 20px auto;
-  padding: 0.25em 4em;
+}
+
+div.match-row div {
+  display: flex;
+  text-align: center;
+  align-items: center;
+  justify-content: center;
 }
 
 div.match-row:nth-child(odd) {
@@ -167,33 +147,9 @@ div.match-cell-guest {
 
 div.match-cell-info {
   flex: auto;
-  text-align: center;
-  align-items: center;
-  justify-content: center;
   font-size: 0.75em;
   display: flex;
   flex-direction: row;
-}
-
-div.match-cell-info > div {
-  flex: auto;
-  padding-left: 3em;
-  padding-right: 3em;
-  text-align: center;
-  align-items: center;
-  justify-content: center;
-  display: flex;
-}
-
-div.match-cell-info > div > div {
-  flex: auto;
-  text-align: center;
-  align-items: center;
-  justify-content: center;
-}
-
-.game-icon {
-  font-size: 0.7em;
 }
 
 .player-winner {

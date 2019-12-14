@@ -51,14 +51,19 @@ export default class ShowcaseFooter extends Vue {
 <style scoped>
 #footer {
   flex-shrink: 0;
+  margin: 0;
   padding: 6px 16px;
-  height: 50px;
-  background: #171717;
   position: absolute;
+  height: 50px;
   bottom: 0;
   left: 0;
   right: 0;
+  background: #171717;
   z-index: 1000;
+}
+
+#footer div {
+  display: flex;
 }
 
 div.footer-spacer {
